@@ -28,6 +28,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    // Function for starting the app and choosing difficulty
     fun start(difficulty: String) {
         val intent = Intent(this, StartGame::class.java)
         intent.putExtra("difficulty", difficulty)

@@ -38,8 +38,11 @@ class StartGame : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_start_game)
+
+        //Extract difficulty variable to use when fetching questions from API
         difficulty = getIntent().extras!!.getString("difficulty").toString()
-        println(difficulty)
+
+        //Assign variables for elements in UI.
         tvTimer = findViewById(R.id.tvTimer)
         btn1 = findViewById(R.id.btn1)
         btn2 = findViewById(R.id.btn2)
@@ -48,16 +51,19 @@ class StartGame : AppCompatActivity() {
         tvScore = findViewById(R.id.tvScore)
         tvQuestion = findViewById(R.id.tvQuestionText)
 
+        //Fetch questions from API, starts the game when after response is received and handled.
         getTheData()
 
     }
 
+    //Main game loop, runs until the app has run out of questions.
     fun startGame() {
         println("startGame")
         millisUntilFinished = 20000
         tvTimer.setText("" + (millisUntilFinished / 1000) + "s")
         tvScore.setText(score.toString() + " / " + questionObjects.size)
         generateQuestion(index)
+        //Timer for each question, will automatically move on to next question if timer reaches zero.
         countDownTimer = object : CountDownTimer(millisUntilFinished, 1000) {
 
             override fun onTick(millisUntilFinished: Long) {
@@ -67,6 +73,7 @@ class StartGame : AppCompatActivity() {
 
             override fun onFinish() {
                 println("onFinish")
+                //Increment index to move to next question.
                 index++
                 if (index > questionObjects.size -1) {
                     btn1.setVisibility(View.GONE)
@@ -86,6 +93,7 @@ class StartGame : AppCompatActivity() {
         }.start()
     }
 
+    //Function for displaying one question, one correct answer and three incorrect answers on buttons.
     fun generateQuestion(index: Int) {
         println("generateQuestion")
 
@@ -104,6 +112,7 @@ class StartGame : AppCompatActivity() {
         println("debug: ${methodName}: ${Thread.currentThread().name}")
     }
 
+    //Fetch questions from API and start main game loop.
    fun getTheData() {
         logThread("getTheData")
 
@@ -145,6 +154,7 @@ class StartGame : AppCompatActivity() {
 
     }
 
+    //Function for moving on to the next question. Moves to GameOver screen if all questions have been answered.
     fun nextQuestion() {
         countDownTimer.cancel()
         index++
@@ -163,6 +173,7 @@ class StartGame : AppCompatActivity() {
         }
     }
 
+    //Function for handling answer button functionality.
     fun answerSelected(view: View) {
         println("answerSelected")
         var answer: String = (view as Button).getText().toString().trim()
