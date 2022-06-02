@@ -7,7 +7,11 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
+import com.kyptonaut.computerquiz.viewmodels.QuestionsViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -112,9 +116,24 @@ class StartGame : AppCompatActivity() {
         println("debug: ${methodName}: ${Thread.currentThread().name}")
     }
 
-    //Fetch questions from API and start main game loop.
+    //Fetch questions through a ViewModel from an API and start main game loop.
    fun getTheData() {
-        logThread("getTheData")
+
+        val viewModel = ViewModelProviders.of(this).get(QuestionsViewModel::class.java)
+        viewModel.startApiCall(difficulty)
+        viewModel.getLiveDataObject().observeForever(androidx.lifecycle.Observer {
+            //println("Observing")
+            if (it != null) {
+                questionObjects = it
+                //println(questionObjects)
+                startGame()
+            } else {
+                Toast.makeText(this@StartGame, "Not getting any questions from the API.", Toast.LENGTH_LONG).show()
+            }
+        })
+
+
+        /*logThread("getTheData")
 
         val retrofitBuilder = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
@@ -150,7 +169,7 @@ class StartGame : AppCompatActivity() {
             override fun onFailure(call: Call<ResponseData>, t: Throwable) {
                 Log.d("StartGame", "onFailure:"  + t.message)
             }
-        })
+        })*/
 
     }
 
